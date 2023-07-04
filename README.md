@@ -1,2 +1,2 @@
 # init-lua
-This is my nvim config located in ~/.config/nvim
+Prerequisite: install [ripgrep](https://github.com/BurntSushi/ripgrep).
