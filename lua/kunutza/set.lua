@@ -1,5 +1,5 @@
 -- Make the cursor fat
-vim.opt.guicursor = ""
+vim.opt.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait700-blinkoff400-blinkon200,sm:block-blink-blinkwait175-blinkoff150-blinkon175"
 
 vim.opt.nu = true
 vim.opt.relativenumber = true
