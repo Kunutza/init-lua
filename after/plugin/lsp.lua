@@ -1,57 +1,12 @@
-local lsp = require("lsp-zero")
-
-lsp.extend_lspconfig()  -- replaces lsp.preset("recommended")
-
--- ensure servers are installed
-require('mason').setup()
-require('mason-lspconfig').setup({
-    ensure_installed = {
-        'rust_analyzer',
-    },
-    handlers = {
-        lsp.default_setup,
-    },
+local lsp = require("lsp-zero").preset({
+    name = "recommended",
+    manage_nvim_cmp = true,
+    set_lsp_keymaps = false,
 })
 
-local cmp = require('cmp')
-local cmp_select = {behavior = cmp.SelectBehavior.Select}
-local cmp_mappings = lsp.defaults.cmp_mappings({
-  ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-  ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-  ['<Tab>'] = cmp.mapping.confirm({ select = true }),
-  ['<C-y>'] = cmp.mapping.confirm({ select = true }),
-  ['<C-e>'] = cmp.mapping.complete(),
-})
-
--- Disable completion with tab
---cmp_mappings['<Tab>'] = nil
---cmp_mappings['<S-Tab>'] = nil
-
--- lsp.setup_nvim_cmp() HAS BEEN REMOVED in lsp-zero v3+
--- so replace it with a direct cmp.setup() call
-cmp.setup({
-  mapping = cmp_mappings,
-  sources = cmp.config.sources({
-      { name = 'nvim_lsp' },
-  }, {
-      { name = 'buffer' },
-  })
-})
-
-lsp.set_preferences({
-    suggest_lsp_servers = false,
-    sign_icons = {
-        error = 'E',
-        warn = 'W',
-        hint = 'H',
-        info = 'I'
-    }
-})
-
--- keymaps
+-- Keymaps
 lsp.on_attach(function(client, bufnr)
     local opts = { buffer = bufnr, remap = false }
-
     vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
     vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
     vim.keymap.set("n", "<leader>vws", vim.lsp.buf.workspace_symbol, opts)
@@ -64,8 +19,27 @@ lsp.on_attach(function(client, bufnr)
     vim.keymap.set("i", "<C-h>", vim.lsp.buf.signature_help, opts)
 end)
 
--- diagnostics
-vim.diagnostic.config({
-    virtual_text = true
+-- Mason setup
+require("mason").setup()
+require("mason-lspconfig").setup()
+
+-- Ensure servers
+lsp.ensure_installed({ "clangd", "rust_analyzer" })
+
+-- Setup nvim-cmp mappings
+local cmp = require("cmp")
+cmp.setup({
+    mapping = {
+        ["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
+        ["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
+        ["<C-e>"] = cmp.mapping.complete(),
+        ["<Tab>"] = cmp.mapping.confirm({ select = true }),
+    }
 })
+
+-- Diagnostics
+vim.diagnostic.config({ virtual_text = true })
+
+-- Setup LSP
+lsp.setup()
 
